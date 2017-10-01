@@ -49,6 +49,7 @@ values."
      ;;spell-checking
      syntax-checking
      python
+     ipython-notebook
      c-c++
      ;; version-control
      )
