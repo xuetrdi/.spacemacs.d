@@ -68,12 +68,12 @@ values."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(go-autocomplete
-                                       youdao-dictionary)
+                                      youdao-dictionary
+                                      chinese-pyim)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(
-                                    vi-tilde-fringe
+   dotspacemacs-excluded-packages '(vi-tilde-fringe
                                     clean-aindent-mode
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
