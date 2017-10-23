@@ -37,10 +37,11 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      ivy
-     auto-completion
+     (auto-completion :disabled-for org markdown)
      better-defaults
      emacs-lisp
-     git
+     (git :variables
+          git-magit-status-fullscreen t)
      markdown
      org
      (shell :variables
@@ -57,12 +58,17 @@ values."
          gofmt-command "goimports"
          gofmt-before-save t)
      ;; version-control
+     ;;;; git clone private han
+     (han :variables
+           han-enable-youdao-dict t
+           han-org-line-spacing 0.2)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(go-autocomplete)
+   dotspacemacs-additional-packages '(go-autocomplete
+                                       youdao-dictionary)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -94,7 +100,7 @@ values."
    ;; This variable has no effect if Emacs is launched with the parameter
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
-   dotspacemacs-elpa-https t
+   dotspacemacs-elpa-https nil
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    dotspacemacs-elpa-timeout 5
    ;; If non nil then spacemacs will check for updates at startup
@@ -330,16 +336,16 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   ;;UTF-8
   (set-language-environment "UTF-8")
-  (set-default-coding-systems 'utf-8-unix)
+  (set-default-coding-systems 'utf-8)
   (set-buffer-file-coding-system 'utf-8-unix)
   (set-clipboard-coding-system 'utf-8-unix)
   (set-file-name-coding-system 'utf-8-unix)
   (set-keyboard-coding-system 'utf-8-unix)
-  ;;(set-next-selection-coding-system 'utf-8-unix)
-  (setq locale-coding-system 'utf-8-unix)
+  (set-next-selection-coding-system 'utf-8-unix)
+  (set-selection-coding-system 'utf-8-unix)
   (set-terminal-coding-system 'utf-8-unix)
-  ;;(set-selection-coding-system 'utf-8-unix)
-  (prefer-coding-system 'utf-8-unix)
+  (setq locale-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
   (setq powerline-default-separator 'utf-8)
 
   ;; go-complete
@@ -348,6 +354,11 @@ you should place your code here."
   (ac-config-default)
   (setq gofmt-command "goimports")
 
+  ;; chinese
+  (spacemacs//set-monospaced-font "Monaco" "BabelStone Han" 16 14)
+  
+  ;;python anaconda-mode
+  (setq socks-server '("Default server" "127.0.0.1" 1080 5))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
