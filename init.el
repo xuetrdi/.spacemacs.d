@@ -59,22 +59,59 @@ values."
          gofmt-before-save t)
      ;; version-control
      ;;;; git clone private han
-     (han :variables
-           han-enable-youdao-dict t
-           han-org-line-spacing 0.2)
+     ;;(han :variables
+     ;;     han-enable-youdao-dict t
+     ;;      han-org-line-spacing 0.2)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(go-autocomplete
-                                      youdao-dictionary
-                                      chinese-pyim)
+                                      ;;youdao-dictionary
+                                      ;;chinese-pyim
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(vi-tilde-fringe
                                     clean-aindent-mode
+                                    chinese-pyim
+                                    evil-args
+                                    evil-ediff
+                                    evil-mc
+                                    evil-exchange
+                                    evil-unimpaired
+                                    evil-indent-plus
+                                    evil-escape
+                                    evil-lisp-state
+                                    helm-flyspell
+                                    helm-swoop
+                                    helm-purpose
+                                    helm-flyspell
+                                    helm-spacemacs-help
+                                    helm-themes
+                                    helm-c-yasnippet
+                                    counsel-projectile
+                                    org-projectile
+                                    org-download
+                                    org-timer
+                                    org-repo-todo
+                                    org-bullets
+                                    magit-gh-pulls
+                                    magit-gitflow
+                                    git-gutter
+                                    git-gutter-fringe
+                                    company-quickhelp
+                                    gh-md
+                                    magithub
+                                    smooth-scrolling
+                                    eyebrowse
+                                    auto-dictionary
+                                    flyspell-correct-helm
+                                    ivy-purpose
+                                    spacemacs-purpose-popwin
+                                    window-purpose
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -324,7 +361,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
                                           "GOPATH"
                                           "GOROOT"
                                           "GOBIN"))
-   (global-git-commit-mode t)
   )
 
 (defun dotspacemacs/user-config ()
@@ -355,7 +391,7 @@ you should place your code here."
   (setq gofmt-command "goimports")
 
   ;; chinese
-  (spacemacs//set-monospaced-font "Monaco" "BabelStone Han" 16 14)
+  ;;(spacemacs//set-monospaced-font "Monaco" "BabelStone Han" 16 14)
   
   ;;python anaconda-mode
   (setq socks-server '("Default server" "127.0.0.1" 1080 5))
@@ -370,7 +406,7 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (go-autocomplete flycheck-gometalinter go-guru go-eldoc company-go go-mode company-web web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode haml-mode emmet-mode web-completion-data ein skewer-mode request-deferred websocket deferred js2-mode f s dash monokai-theme mmm-mode markdown-toc markdown-mode gh-md yapfify xterm-color unfill smeargle shell-pop pyvenv pytest pyenv-mode py-isort pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download mwim multi-term magit-gitflow live-py-mode hy-mode htmlize gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy flyspell-correct-ivy flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help cython-mode company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy evil-unimpaired))))
+    (youdao-dictionary names chinese-word-at-point go-autocomplete flycheck-gometalinter go-guru go-eldoc company-go go-mode company-web web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode haml-mode emmet-mode web-completion-data ein skewer-mode request-deferred websocket deferred js2-mode f s dash monokai-theme mmm-mode markdown-toc markdown-mode gh-md yapfify xterm-color unfill smeargle shell-pop pyvenv pytest pyenv-mode py-isort pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download mwim multi-term magit-gitflow live-py-mode hy-mode htmlize gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy flyspell-correct-ivy flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help cython-mode company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy evil-unimpaired))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
