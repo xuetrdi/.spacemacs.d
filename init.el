@@ -25,11 +25,7 @@
          go-tab-width 4
          gofmt-command "goimports"
          gofmt-before-save t)
-     ;; git clone private han
-     ;;(han :variables
-     ;;     han-enable-youdao-dict t
-     ;;      han-org-line-spacing 0.2)
-     )
+   )
    dotspacemacs-additional-packages '(go-autocomplete
                                       ;;youdao-dictionary
                                       ;;chinese-pyim
