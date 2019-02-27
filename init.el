@@ -7,22 +7,23 @@
    dotspacemacs-configuration-layers
    '(
      ivy
-     (auto-completion :disabled-for org markdown)
+     auto-completion
      better-defaults
-     (syntax-checking :variables syntax-checking-enable-by-default nil)
+     (syntax-checking :variables syntax-checking-enable-by-default t)
      emacs-lisp
      (git :variables
           git-magit-status-fullscreen t)
      markdown
      dash
      org
-     lsp
+     ;; (org :variables org-projectile-file "TODOs.org")
+     gnus
      (gtags :variables gtags-enable-by-default t)
      (latex :variables
             latex-build-command "LaTex"
             latex-enable-auto-fill t
             latex-enable-folding t)
-     (shell :variables shell-default-shell 'eshell)
+     (shell :variables shell-default-shell 'zsh)
      lsp
      (python :variables ;;python-backend 'lsp
              python-sort-imports-on-save t
@@ -32,15 +33,10 @@
      lua
      html
      (javascript :variables javascript-backend 'nil)
-     ;; cpp2
-     ;; semantic
-     ;; cscope
-     ;; ycmd
      gpu
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-clang-support t)
-     protobuf
      (cmake :variables cmake-enable-cmake-ide-support t)
      ess
      (julia :variables
@@ -48,10 +44,11 @@
             julia-mode-enable-lsp t)
      ;; emoji
      graphviz
-     sphinx
-     restructuredtext
+     plantuml
+     ;; sphinx
      yaml
-     ;; ycmd
+     protobuf
+     csv
      (go :variables
          go-tab-width 2
          gofmt-command "goimports"
@@ -89,11 +86,15 @@
                                     helm-themes
                                     helm-c-yasnippet
                                     counsel-projectile
-                                    org-projectile
+                                    ;; org-projectile
                                     org-download
                                     org-timer
-                                    org-repo-todo
-                                    org-bullets
+                                    ;; org-repo-todo
+                                    ;; org-bullets
+                                    org-plus-contrib
+                                    org-brain
+                                    org-present
+                                    orgit
                                     magit-gh-pulls
                                     magit-gitflow
                                     git-gutter
@@ -108,10 +109,6 @@
                                     ivy-purpose
                                     spacemacs-purpose-popwin
                                     window-purpose
-                                    org-plus-contrib
-                                    org-brain
-                                    org-present
-                                    orgit
                                     info+
                                     help-fns+
                                     hide-comnt
@@ -217,9 +214,18 @@
   ;; (add-hook 'julia-mode-hook 'julia-repl-mode)
 
   ;; orgmode todolist
-  (setq org-todo-keywords
-        '((sequence "NEXT(n!)" "TODO(t)" "DOING(i!)" "HANGUP(h!)" "|" "DONE(d!)" "CANCELED(c!)")))
-  (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
+  (with-eval-after-load 'org
+    (setq org-todo-keywords
+        '((sequence "NEXT(n!)" "TODO(t)" "DOING(i!)" "HANGUP(h!)" "WORK" "LEARN" "|" "DONE(d!)" "CANCELED(c!)")))
+    (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
+    (org-babel-do-load-languages 'org-babel-load-languages
+                                 '((emacs-lisp . t)
+                                   (plantuml . t)
+                                   (C . t)))
+    )
+
+  ;; plantuml
+  (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
 
   ;; bazel
   (add-hook 'bazel-mode-hook (lambda() (add-hook 'before-save-hook #'bazel-format nil t)))
@@ -234,12 +240,12 @@
   ;; (setq-default magit-repository-directories '("~/repos/"))
 
   ;; LaTex
+  (add-to-list 'load-path "/Library/TeX/texbin")
   (add-hook 'doc-view-minor-mode-hook 'auto-revert-mode)
 
   ;; Ycmd Server
   ;; (set-variable 'ycmd-server-command '("/Users/jinpeng.d/.pyenv/versions/3.6.6/bin/python" "-u" "/Users/jinpeng.d/config/ycmd/ycmd"))
   ;; (set-variable 'ycmd-global-config '("/Users/jinpeng.d/practice/cc/.ycm_extra_conf.py"))
-  ;; (set-variable 'ycmd-global-config "/Users/jinpeng.d/config/global_config.py")
   ;; Ycmd global configure project/path/.ycmd_extra_conf.py or .clang_complte
   ;; global_conf.py 补充 compile_commands.json
   ;; (add-hook 'c-mode-hook 'ycmd-mode)
@@ -256,28 +262,56 @@
   (defun clang-format-bindings ()
     (define-key c++-mode-map [tab] 'clang-format-buffer))
 
-  ;; C style
   (c-add-style "mystyle"
                '((c-basic-offset . 2)))
   (push '(other . "gnu") c-default-style)
+
+  ;; Open todo.org
+  (find-file "~/todo.org")
+  ;; ;; Agenda
+  ;; (with-eval-after-load 'org-agenda
+  ;;   (require 'org-projectile)
+  ;;   (push (org-projectile:"todo.org") org-agenda-files))
+  ;; (devar org-agenda-dir "" "gtd org files location")
+  ;; (setq-default org-agenda-dir "~/org")
+  ;; (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
+  ;; (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
+  ;; (setq org-agenda-journal (expand-file-name "journal.org" org-agenda-dir))
+  ;; (setq org-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
+  ;; (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
+  ;; (setq org-agenda-files (list org-agenda-dir))
+  ;; (with-eval-after-load 'org-agenda
+  ;;   (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
+  ;;   (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode
+  ;;     "" 'spacemacs/org-agenda-transient-state/body))
+  ;; capture template
+  ;; (setq org-capture-templates
+  ;;       '(("t" "Todo" entry (file+headline org-agenda-file-gtd "Workspace")
+  ;;          "* TODO [#B]%?\n %i\n"
+  ;;          :empty-lines 1)
+  ;;         ("n" "notes" entry (file+headline org-agenda-file-note "Quick notes")
+  ;;          "*%?\n %i\n %U"
+  ;;          :empty-lines 1)
+  ;;         ("b" "Blog ldeas" entry (file+headline org-agenda-file-note "Blog ldeas")
+  ;;          "*TOTO[#B]%?\n %i\n %U"
+  ;;          :empty-lines 1)
+  ;;         ("s" "Code Snippet" entry (file org-agenda-file-code-snippet)
+  ;;          "*%?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
+  ;;         ("w" "work" entry (file+headline org-agenda-file-gtd "cmi")
+  ;;          "*TODO[#A]%?\n %i\n %U"
+  ;;          :empty-lines 1)
+  ;;         ;; ("c" "Chrome" entry (file+headline org-agenda-file-note "Quick notes")
+  ;;         ;;  "*TODO[#C]%?\n %()")))
+  ;;         ))
+  ;; (setq org-agenda-custom-commands
+  ;;       '(
+  ;;         ("w" "任务安排")
+  ;;         ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
+  ;;         ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")))
 )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (xah-math-input yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key wgrep web-mode web-beautify volatile-highlights uuidgen use-package unfill toc-org tagedit symon swift-mode string-inflection spaceline-all-the-icons smex smeargle slim-mode shell-pop scss-mode sass-mode restart-emacs request rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode protobuf-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox overseer org-pomodoro org-mime opencl-mode open-junk-file neotree nameless mwim multi-term move-text monokai-theme mmm-mode markdown-toc magit-svn macrostep lsp-ui lsp-python lsp-julia lsp-javascript-typescript lsp-go lorem-ipsum livid-mode live-py-mode link-hint julia-repl json-navigator json-mode js2-refactor js-doc ivy-yasnippet ivy-xref ivy-rtags ivy-hydra indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-make graphviz-dot-mode google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc go-autocomplete gnuplot glsl-mode gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link ggtags fuzzy font-lock+ flycheck-rtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery expand-region evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lion evil-iedit-state evil-goggles evil-cleverparens evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline disaster diminish define-word dash-at-point cython-mode cuda-mode counsel-gtags counsel-dash counsel-css company-web company-tern company-statistics company-rtags company-lua company-lsp company-go company-c-headers company-auctex company-anaconda column-enforce-mode cmake-mode cmake-ide clang-format centered-cursor-mode cdlatex bind-map auto-yasnippet auto-highlight-symbol auto-complete-rst auto-compile all-the-icons-ivy all-the-icons-dired aggressive-indent ace-window ace-link ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 )
