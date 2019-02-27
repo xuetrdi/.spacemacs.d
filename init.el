@@ -16,8 +16,6 @@
      markdown
      dash
      org
-     ;; (org :variables org-projectile-file "TODOs.org")
-     gnus
      (gtags :variables gtags-enable-by-default t)
      (latex :variables
             latex-build-command "LaTex"
@@ -45,7 +43,6 @@
      ;; emoji
      graphviz
      plantuml
-     ;; sphinx
      yaml
      protobuf
      csv
@@ -90,7 +87,6 @@
                                     org-download
                                     org-timer
                                     ;; org-repo-todo
-                                    ;; org-bullets
                                     org-plus-contrib
                                     org-brain
                                     org-present
@@ -214,14 +210,19 @@
   ;; (add-hook 'julia-mode-hook 'julia-repl-mode)
 
   ;; orgmode todolist
+  (require 'org-tempo)
   (with-eval-after-load 'org
     (setq org-todo-keywords
         '((sequence "NEXT(n!)" "TODO(t)" "DOING(i!)" "HANGUP(h!)" "WORK" "LEARN" "|" "DONE(d!)" "CANCELED(c!)")))
-    (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
+    ;; (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '((emacs-lisp . t)
                                    (plantuml . t)
-                                   (C . t)))
+                                   (C . t)
+                                   ;; (swift . t)
+                                   ;; (go . t)
+                                   ;; (julia . t)
+                                   ))
     )
 
   ;; plantuml
@@ -240,17 +241,8 @@
   ;; (setq-default magit-repository-directories '("~/repos/"))
 
   ;; LaTex
-  (add-to-list 'load-path "/Library/TeX/texbin")
+  ;; (add-to-list 'load-path "/Library/TeX/texbin")
   (add-hook 'doc-view-minor-mode-hook 'auto-revert-mode)
-
-  ;; Ycmd Server
-  ;; (set-variable 'ycmd-server-command '("/Users/jinpeng.d/.pyenv/versions/3.6.6/bin/python" "-u" "/Users/jinpeng.d/config/ycmd/ycmd"))
-  ;; (set-variable 'ycmd-global-config '("/Users/jinpeng.d/practice/cc/.ycm_extra_conf.py"))
-  ;; Ycmd global configure project/path/.ycmd_extra_conf.py or .clang_complte
-  ;; global_conf.py 补充 compile_commands.json
-  ;; (add-hook 'c-mode-hook 'ycmd-mode)
-  ;; (add-hook 'python-mode-hook 'ycmd-mode)
-  ;; (add-hook 'go-mode-hook 'ycmd-mode)
 
   ;; xah-math-input
   (global-xah-math-input-mode 1)
@@ -268,46 +260,6 @@
 
   ;; Open todo.org
   (find-file "~/todo.org")
-  ;; ;; Agenda
-  ;; (with-eval-after-load 'org-agenda
-  ;;   (require 'org-projectile)
-  ;;   (push (org-projectile:"todo.org") org-agenda-files))
-  ;; (devar org-agenda-dir "" "gtd org files location")
-  ;; (setq-default org-agenda-dir "~/org")
-  ;; (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
-  ;; (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
-  ;; (setq org-agenda-journal (expand-file-name "journal.org" org-agenda-dir))
-  ;; (setq org-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
-  ;; (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
-  ;; (setq org-agenda-files (list org-agenda-dir))
-  ;; (with-eval-after-load 'org-agenda
-  ;;   (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
-  ;;   (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode
-  ;;     "" 'spacemacs/org-agenda-transient-state/body))
-  ;; capture template
-  ;; (setq org-capture-templates
-  ;;       '(("t" "Todo" entry (file+headline org-agenda-file-gtd "Workspace")
-  ;;          "* TODO [#B]%?\n %i\n"
-  ;;          :empty-lines 1)
-  ;;         ("n" "notes" entry (file+headline org-agenda-file-note "Quick notes")
-  ;;          "*%?\n %i\n %U"
-  ;;          :empty-lines 1)
-  ;;         ("b" "Blog ldeas" entry (file+headline org-agenda-file-note "Blog ldeas")
-  ;;          "*TOTO[#B]%?\n %i\n %U"
-  ;;          :empty-lines 1)
-  ;;         ("s" "Code Snippet" entry (file org-agenda-file-code-snippet)
-  ;;          "*%?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
-  ;;         ("w" "work" entry (file+headline org-agenda-file-gtd "cmi")
-  ;;          "*TODO[#A]%?\n %i\n %U"
-  ;;          :empty-lines 1)
-  ;;         ;; ("c" "Chrome" entry (file+headline org-agenda-file-note "Quick notes")
-  ;;         ;;  "*TODO[#C]%?\n %()")))
-  ;;         ))
-  ;; (setq org-agenda-custom-commands
-  ;;       '(
-  ;;         ("w" "任务安排")
-  ;;         ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
-  ;;         ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")))
 )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
