@@ -210,12 +210,16 @@
   (setq inferior-julia-program-name "/Applications/Julia-1.0.app/Contents/Resources/julia/bin/julia")
   ;; (add-hook 'julia-mode-hook 'julia-repl-mode)
 
-  ;; orgmode todolist
+  ;; orgmode latex preview
+  ;; (startup-latex-with-latex-preview t)
+  ;; orgmode hotkey, such as <s
   (require 'org-tempo)
+  ;; orgmode todolist
   (with-eval-after-load 'org
     (setq org-todo-keywords
         '((sequence "NEXT(n!)" "TODO(t)" "DOING(i!)" "HANGUP(h!)" "WORK" "LEARN" "|" "DONE(d!)" "CANCELED(c!)")))
     ;; (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
+    ;; Babel orgmode execute source code
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '((emacs-lisp . t)
                                    (python . t)
@@ -231,7 +235,7 @@
     )
 
   ;; plantuml
-  (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
+  (setq org-plantuml-jar-path (expand-file-name "~/config/plantuml.jar"))
 
   ;; bazel
   (add-hook 'bazel-mode-hook (lambda() (add-hook 'before-save-hook #'bazel-format nil t)))
@@ -248,6 +252,9 @@
   ;; LaTex
   ;; (add-to-list 'load-path "/Library/TeX/texbin")
   (add-hook 'doc-view-minor-mode-hook 'auto-revert-mode)
+  ;; (setq org-latex-create-formula-image-program 'dvipng)
+  ;; math formatting convert image to PDF file and HTML file.
+  (setq org-latex-create-formula-image-program 'imagemagick)
 
   ;; xah-math-input
   (global-xah-math-input-mode 1)
