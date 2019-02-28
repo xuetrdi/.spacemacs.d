@@ -87,7 +87,7 @@
                                     org-download
                                     org-timer
                                     ;; org-repo-todo
-                                    org-plus-contrib
+                                    ;; org-plus-contrib
                                     org-brain
                                     org-present
                                     orgit
@@ -207,6 +207,7 @@
 
   ;; Jalia
   (require 'julia-repl)
+  (setq inferior-julia-program-name "/Applications/Julia-1.0.app/Contents/Resources/julia/bin/julia")
   ;; (add-hook 'julia-mode-hook 'julia-repl-mode)
 
   ;; orgmode todolist
@@ -217,11 +218,15 @@
     ;; (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '((emacs-lisp . t)
+                                   (python . t)
                                    (plantuml . t)
+                                   (dot . t)
+                                   (latex . t)
+                                   (shell . t)
                                    (C . t)
-                                   ;; (swift . t)
-                                   ;; (go . t)
-                                   ;; (julia . t)
+                                   (swift . t)
+                                   (go . t)
+                                   (julia . t)
                                    ))
     )
 
