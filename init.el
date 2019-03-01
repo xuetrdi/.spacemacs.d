@@ -235,7 +235,7 @@
     )
 
   ;; plantuml
-  (setq org-plantuml-jar-path (expand-file-name "~/config/plantuml.jar"))
+  (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
 
   ;; bazel
   (add-hook 'bazel-mode-hook (lambda() (add-hook 'before-save-hook #'bazel-format nil t)))
@@ -255,6 +255,9 @@
   ;; (setq org-latex-create-formula-image-program 'dvipng)
   ;; math formatting convert image to PDF file and HTML file.
   (setq org-latex-create-formula-image-program 'imagemagick)
+  ;; LaTex 输出PDF高亮代码
+  (setq org-latex-listings 'minted)
+  (add-to-list 'org-latex-packages-alist '("" "minted"))
 
   ;; xah-math-input
   (global-xah-math-input-mode 1)
