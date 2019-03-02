@@ -216,6 +216,8 @@
   (require 'org-tempo)
   ;; orgmode todolist
   (with-eval-after-load 'org
+    ;; 进入Orgmode后转入cdlatex
+    (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
     (setq org-todo-keywords
         '((sequence "NEXT(n!)" "TODO(t)" "DOING(i!)" "HANGUP(h!)" "WORK" "LEARN" "|" "DONE(d!)" "CANCELED(c!)")))
     ;; (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
@@ -259,7 +261,7 @@
   (setq org-latex-listings 'minted)
   (add-to-list 'org-latex-packages-alist '("" "minted"))
 
-  ;; xah-math-input
+  ;; xah-math-input, SHIFT + SPACE
   (global-xah-math-input-mode 1)
   (xah-math-input-mode 1)
 
