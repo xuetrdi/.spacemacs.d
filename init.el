@@ -40,7 +40,7 @@
      (julia :variables
             ;; julia-mode-enable-ess t)
             julia-mode-enable-lsp t)
-     ;; emoji
+     emoji
      graphviz
      plantuml
      yaml
@@ -50,6 +50,9 @@
          go-tab-width 2
          gofmt-command "goimports"
          gofmt-before-save t)
+     (chinese :package youdao-dictionary fcitx
+              :variables chinese-enable-fcitx nil
+              chinese-enable-youdao-dict t)
    )
    dotspacemacs-additional-packages '(go-autocomplete
                                       all-the-icons
@@ -277,6 +280,10 @@
 
   ;; Open todo.org
   (find-file "~/todo.org")
+
+  (when (configuration-layer/layer-usedp 'chinese)
+    (when (and (spacemacs/system-is-mac) window-system)
+      (spacemacs//set-monospaced-font "Monaco" "Hiragino Sans GB" 16 14)))
 )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
