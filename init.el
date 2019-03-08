@@ -213,6 +213,11 @@
   (setq inferior-julia-program-name "/Applications/Julia-1.0.app/Contents/Resources/julia/bin/julia")
   ;; (add-hook 'julia-mode-hook 'julia-repl-mode)
 
+  ;; orgmode preview set image size
+  (image-type-available-p 'imagemagick)
+  (setq org-image-actual-width '(400))
+  ;; 导出文本阻止下划线成下标
+  (setq org-export-with-sub-superscripts nil)
   ;; orgmode latex preview
   ;; (startup-latex-with-latex-preview t)
   ;; orgmode hotkey, such as <s
@@ -255,12 +260,12 @@
   ;; (setq-default magit-repository-directories '("~/repos/"))
 
   ;; LaTex
-  ;; (add-to-list 'load-path "/Library/TeX/texbin")
   (add-hook 'doc-view-minor-mode-hook 'auto-revert-mode)
   ;; (setq org-latex-create-formula-image-program 'dvipng)
   ;; math formatting convert image to PDF file and HTML file.
   (setq org-latex-create-formula-image-program 'imagemagick)
-  ;; LaTex 输出PDF高亮代码
+  ;; LaTex 输出PDF高亮代码, hotkey: C-c C-e l l
+  ;; pdflatex -shell-escape -interaction nonstopmode <tex-file>
   (setq org-latex-listings 'minted)
   (add-to-list 'org-latex-packages-alist '("" "minted"))
 
@@ -281,6 +286,7 @@
   ;; Open todo.org
   (find-file "~/todo.org")
 
+  ;; orgmode中英文对齐
   (when (configuration-layer/layer-usedp 'chinese)
     (when (and (spacemacs/system-is-mac) window-system)
       (spacemacs//set-monospaced-font "Monaco" "Hiragino Sans GB" 16 14)))
