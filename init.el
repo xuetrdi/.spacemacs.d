@@ -38,11 +38,13 @@
      (cmake :variables cmake-enable-cmake-ide-support t)
      ess
      (julia :variables
-            ;; julia-mode-enable-ess t)
-            julia-mode-enable-lsp t)
+            julia-mode-enable-ess t)
+            ;; julia-mode-enable-lsp nil)
+     themes-megapack
      emoji
      graphviz
      plantuml
+     mermaid
      yaml
      protobuf
      csv
@@ -128,7 +130,12 @@
                                (projects . 7))
    dotspacemacs-startup-buffer-responsive t
    dotspacemacs-scratch-mode 'text-mode
-   dotspacemacs-themes '(monokai
+   dotspacemacs-themes '(
+                         junio
+                         purple-haze
+                         spolsky
+                         ir-black
+                         monokai
                          spacemacs-dark
                          spacemacs-light)
    dotspacemacs-colorize-cursor-according-to-state t
@@ -216,6 +223,11 @@
   ;; orgmode preview set image size
   (image-type-available-p 'imagemagick)
   (setq org-image-actual-width '(400))
+
+  ;; mermaid layer
+  (setq ob-mermaid-cli-path "~/node_modules/.bin/mmdc")
+
+
   ;; 导出文本阻止下划线成下标
   (setq org-export-with-sub-superscripts nil)
   ;; orgmode latex preview
@@ -235,6 +247,7 @@
                                    (python . t)
                                    (plantuml . t)
                                    (dot . t)
+                                   (mermaid . t)
                                    (latex . t)
                                    (shell . t)
                                    (C . t)
@@ -242,6 +255,42 @@
                                    (go . t)
                                    (julia . t)
                                    ))
+    ;; org capture
+    ;; (server-start)
+    (require 'org-capture)
+    (global-set-key (kbd "C-c c") 'org-capture)
+    (setq org-default-notes-file "~/org/inbox.org")
+    (setq org-capture-templates `(
+	                                ("p" "Protocol" entry (file+headline ,(concat org-directory "~/org/notes.org") "Inbox")
+                                   "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
+	                                ("L" "Protocol Link" entry (file+headline ,(concat org-directory "~/org/notes.org") "Inbox")
+                                   "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n")
+                                  ("r" "Book Reading Task" entry (file+olp "~/Dropbox/org/reading.org" "Reading" "Book")
+                                   "* TODO %^{书名}\n%u\n%a\n" :clock-in t :clock-resume t)
+                                  ("t" "Work Task" entry (file+headline "~/Dropbox/org/task.org" "Work")
+                                   "* TODO %^{任务名}\n%u\n%a\n" :clock-in t :clock-resume t)
+                                  ("w" "Web Collections" entry (file+headline "~/Dropbox/org/link.org" "Web")
+                                   "* %U %:annotation\n\n%:initial\n\n%?")
+                                  ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
+                                   "* %U - %^{heading}\n %?")
+                                  ("i" "Inbox" entry (file "~/Dropbox/org/inbox.org")
+                                   "* %^{heading} %t %^g\n %?\n")
+                                  ("c" "Contacts" entry (file "~/Dorpbox/org/contacts.org")
+                                   "* %^{姓名} %^{手机号} %^{邮箱} %^{住址}p\n\n %?" :empty-lines 1)
+                                  ("b" "Blog" plain (file ,(concat "~/Dropbox/org/blog"
+                                                                   (format-time-string "%Y-%m-%d.org")))
+                                   ,(concat "#+startup: showall\n"
+                                            "#+options: toc:nil\n"
+                                            "#+begin_export html\n"
+                                            "---\n"
+                                            "layout     : post\n"
+                                            "title      : %^{标题}\n"
+                                            "categories : %^{类别}\n"
+                                            "tags       : %^{标签}\n"
+                                            "---\n"
+                                            "#+end_export\n"
+                                            "#+TOC: headlines 2\n"))
+                                  ))
     )
 
   ;; plantuml
@@ -289,7 +338,12 @@
   ;; orgmode中英文对齐
   (when (configuration-layer/layer-usedp 'chinese)
     (when (and (spacemacs/system-is-mac) window-system)
-      (spacemacs//set-monospaced-font "Monaco" "Hiragino Sans GB" 16 14)))
+      (spacemacs//set-monospaced-font "Monaco" "Hiragino Sans GB" 16 16)))
+  ;; orgmode导出中文
+  (setq org-latex-pdf-process '("xelatex -interaction nonstopmode %f"
+                                "xelatex -interaction nonstopmode %f"))
+  (setq org-latex-default-packages-alist
+        (remove '("AUTO" "inputenc" t) org-latex-default-packages-alist))
 )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
