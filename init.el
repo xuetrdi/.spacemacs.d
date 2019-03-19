@@ -9,11 +9,13 @@
      ivy
      auto-completion
      better-defaults
-     (syntax-checking :variables syntax-checking-enable-by-default t)
+     (syntax-checking :variables syntax-checking-enable-by-default t
+                      syntax-checking-enable-tooltips nil
+                      :disabled-for go)
      emacs-lisp
      (git :variables
           git-magit-status-fullscreen t)
-     markdown
+     (markdown :variables markdown-live-preview-engine 'vmd)
      dash
      org
      (gtags :variables gtags-enable-by-default t)
@@ -60,13 +62,14 @@
                                       all-the-icons
                                       all-the-icons-dired
                                       all-the-icons-ivy
-                                      ;; julia-repl
-                                      ;; julia-mode
-                                      ;; ess
+                                      julia-repl
+                                      julia-mode
+                                      ess
                                       ;; cpputils-cmake
                                       cdlatex
                                       auctex
                                       xah-math-input
+                                      ob-mermaid
                                       )
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages '(vi-tilde-fringe
@@ -261,9 +264,9 @@
     (global-set-key (kbd "C-c c") 'org-capture)
     (setq org-default-notes-file "~/org/inbox.org")
     (setq org-capture-templates `(
-	                                ("p" "Protocol" entry (file+headline ,(concat org-directory "~/org/notes.org") "Inbox")
+	                                ("p" "Protocol" entry (file+headline ,(concat org-directory "~/Dropbox/org/notes.org") "Inbox")
                                    "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
-	                                ("L" "Protocol Link" entry (file+headline ,(concat org-directory "~/org/notes.org") "Inbox")
+	                                ("L" "Protocol Link" entry (file+headline ,(concat org-directory "~/Dropbox/org/notes.org") "Inbox")
                                    "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n")
                                   ("r" "Book Reading Task" entry (file+olp "~/Dropbox/org/reading.org" "Reading" "Book")
                                    "* TODO %^{书名}\n%u\n%a\n" :clock-in t :clock-resume t)
@@ -277,7 +280,9 @@
                                    "* %^{heading} %t %^g\n %?\n")
                                   ("c" "Contacts" entry (file "~/Dorpbox/org/contacts.org")
                                    "* %^{姓名} %^{手机号} %^{邮箱} %^{住址}p\n\n %?" :empty-lines 1)
-                                  ("b" "Blog" plain (file ,(concat "~/Dropbox/org/blog"
+                                  ("v" "Vocabulary" entry (file+headline "~/Dropbox/org/words.org" "Vocabulary")
+                                   ,(concat "* %^{heading} :note:\n" "%(generate-anki-note-body\n)"))
+                                  ("b" "Blog" plain (file ,(concat "~/Dropbox/org/blog/"
                                                                    (format-time-string "%Y-%m-%d.org")))
                                    ,(concat "#+startup: showall\n"
                                             "#+options: toc:nil\n"
