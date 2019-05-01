@@ -7,11 +7,15 @@
    dotspacemacs-configuration-layers
    '(
      ivy
-     auto-completion
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t)
      better-defaults
-     (syntax-checking :variables syntax-checking-enable-by-default t
+     (syntax-checking :variables
+                      syntax-checking-enable-by-default t
                       syntax-checking-enable-tooltips nil
-                      :disabled-for go)
+                      :disabled-for
+                      go
+                      python)
      emacs-lisp
      (git :variables
           git-magit-status-fullscreen t)
@@ -24,29 +28,41 @@
             latex-enable-auto-fill t
             latex-enable-folding t)
      (shell :variables shell-default-shell 'zsh)
+     dap
      lsp
-     (python :variables ;;python-backend 'lsp
+     (python :variables ;;
+             ;; python-backend 'anaconda
              python-sort-imports-on-save t
              python-tab-width 2
              python-indent-offset 2)
-     swift
+     (swift :variables
+            swift-tab-width 2
+            swift-indent-offset 2)
      lua
      html
+     imenu-list
      (javascript :variables javascript-backend 'nil)
      gpu
      (c-c++ :variables
+            c-c++-backend 'lsp-ccls
+            ;; c-c++-backend 'rtags
             c-c++-default-mode-for-headers 'c++-mode
-            c-c++-enable-clang-support t)
+            c-c++-enable-google-style t
+            c-c++-enable-google-newline t
+            c-c++-lsp-executable (file-truename "~/config/ccls/Release/ccls")
+            c-c++-lsp-sem-highlight-rainbow t
+            c-c++-lsp-sem-highlight-method 'font-lock
+            c-c++-lsp-cache-dir "/tm/lsp-ccls"
+            ;; c-c++-enable-clang-support t
+            )
      (cmake :variables cmake-enable-cmake-ide-support t)
+     rust
      ess
      (julia :variables
-            julia-mode-enable-ess t)
-            ;; julia-mode-enable-lsp nil)
+            ;; julia-mode-enable-ess t
+            julia-mode-enable-lsp t)
      themes-megapack
-     emoji
      graphviz
-     plantuml
-     mermaid
      yaml
      protobuf
      csv
@@ -65,11 +81,14 @@
                                       julia-repl
                                       julia-mode
                                       ess
-                                      ;; cpputils-cmake
+                                      sr-speedbar
                                       cdlatex
                                       auctex
                                       xah-math-input
-                                      ob-mermaid
+                                      ;; lsp-mode
+                                      ;; lsp-ui
+                                      ;; company-lsp
+                                      ;; dap-gdb-lldb-setup
                                       )
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages '(vi-tilde-fringe
@@ -134,6 +153,16 @@
    dotspacemacs-startup-buffer-responsive t
    dotspacemacs-scratch-mode 'text-mode
    dotspacemacs-themes '(
+                         seti
+                         badwolf
+                         bubbleberry
+                         cherry-blossom
+                         ir-black
+                         spolsky
+                         afternoon
+                         alect-black
+                         alect-black-alt
+                         wheatgrass
                          junio
                          purple-haze
                          spolsky
@@ -227,10 +256,6 @@
   (image-type-available-p 'imagemagick)
   (setq org-image-actual-width '(400))
 
-  ;; mermaid layer
-  (setq ob-mermaid-cli-path "~/node_modules/.bin/mmdc")
-
-
   ;; 导出文本阻止下划线成下标
   (setq org-export-with-sub-superscripts nil)
   ;; orgmode latex preview
@@ -240,7 +265,8 @@
   ;; orgmode todolist
   (with-eval-after-load 'org
     ;; 进入Orgmode后转入cdlatex
-    (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+    ;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+    (plist-put org-format-latex-options :scale 1.5)
     (setq org-todo-keywords
         '((sequence "NEXT(n!)" "TODO(t)" "DOING(i!)" "HANGUP(h!)" "WORK" "LEARN" "|" "DONE(d!)" "CANCELED(c!)")))
     ;; (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
@@ -248,9 +274,7 @@
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '((emacs-lisp . t)
                                    (python . t)
-                                   (plantuml . t)
                                    (dot . t)
-                                   (mermaid . t)
                                    (latex . t)
                                    (shell . t)
                                    (C . t)
@@ -273,15 +297,11 @@
                                   ("t" "Work Task" entry (file+headline "~/Dropbox/org/task.org" "Work")
                                    "* TODO %^{任务名}\n%u\n%a\n" :clock-in t :clock-resume t)
                                   ("w" "Web Collections" entry (file+headline "~/Dropbox/org/link.org" "Web")
-                                   "* %U %:annotation\n\n%:initial\n\n%?")
-                                  ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
-                                   "* %U - %^{heading}\n %?")
+                                   "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
                                   ("i" "Inbox" entry (file "~/Dropbox/org/inbox.org")
                                    "* %^{heading} %t %^g\n %?\n")
                                   ("c" "Contacts" entry (file "~/Dorpbox/org/contacts.org")
                                    "* %^{姓名} %^{手机号} %^{邮箱} %^{住址}p\n\n %?" :empty-lines 1)
-                                  ("v" "Vocabulary" entry (file+headline "~/Dropbox/org/words.org" "Vocabulary")
-                                   ,(concat "* %^{heading} :note:\n" "%(generate-anki-note-body\n)"))
                                   ("b" "Blog" plain (file ,(concat "~/Dropbox/org/blog/"
                                                                    (format-time-string "%Y-%m-%d.org")))
                                    ,(concat "#+startup: showall\n"
@@ -297,9 +317,6 @@
                                             "#+TOC: headlines 2\n"))
                                   ))
     )
-
-  ;; plantuml
-  (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
 
   ;; bazel
   (add-hook 'bazel-mode-hook (lambda() (add-hook 'before-save-hook #'bazel-format nil t)))
@@ -318,6 +335,7 @@
   ;; (setq org-latex-create-formula-image-program 'dvipng)
   ;; math formatting convert image to PDF file and HTML file.
   (setq org-latex-create-formula-image-program 'imagemagick)
+  ;; (setq org-preview-latex-process-alist 'imagemagick)
   ;; LaTex 输出PDF高亮代码, hotkey: C-c C-e l l
   ;; pdflatex -shell-escape -interaction nonstopmode <tex-file>
   (setq org-latex-listings 'minted)
@@ -335,10 +353,9 @@
 
   (c-add-style "mystyle"
                '((c-basic-offset . 2)))
-  (push '(other . "gnu") c-default-style)
+  ;; (push '(other . "gnu") c-default-style)
 
-  ;; Open todo.org
-  (find-file "~/todo.org")
+  (require 'sr-speedbar)
 
   ;; orgmode中英文对齐
   (when (configuration-layer/layer-usedp 'chinese)
@@ -349,6 +366,34 @@
                                 "xelatex -interaction nonstopmode %f"))
   (setq org-latex-default-packages-alist
         (remove '("AUTO" "inputenc" t) org-latex-default-packages-alist))
+
+
+  (add-hook 'hack-local-variables-hook
+            (lambda () (when (derived-mode-p 'python-mode) (lsp))))
+  (setq lsp-print-io t)
+  (use-package company-lsp
+    :ensure t
+    :config
+    (require 'company-lsp)
+    (push 'company-lsp company-backends)
+    (add-hook 'after-init-hook 'global-company-mode))
+
+  (use-package lsp-mode
+    :ensure t
+    :config
+    (require 'lsp-mode)
+    (require 'lsp-clients)
+    (add-hook 'c++-mode-hook 'lsp)
+    (add-hook 'c-mode-hook 'lsp)
+    (add-hook 'python-mode-hook 'lsp))
+
+  (use-package lsp-ui
+    :ensure t
+    :config
+    (require 'lsp-ui))
+
+  ;; Open todo.org
+  (find-file "~/Dropbox/todo.org")
 )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
