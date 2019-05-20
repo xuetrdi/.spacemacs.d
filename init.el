@@ -26,10 +26,12 @@
      (latex :variables
             latex-build-command "LaTex"
             latex-enable-auto-fill t
-            latex-enable-folding t)
+            latex-enable-folding t
+            latex-enable-magic t)
      (shell :variables shell-default-shell 'zsh)
      dap
      lsp
+     ipython-notebook
      (python :variables ;;
              ;; python-backend 'anaconda
              python-sort-imports-on-save t
@@ -38,10 +40,16 @@
      (swift :variables
             swift-tab-width 2
             swift-indent-offset 2)
-     lua
-     html
+     (scala :variables
+            scala-indent:use-javadoc-style t
+            scala-enable-eldoc t
+            scala-auto-insert-asterisk-in-comments t
+            scala-use-unicode-arrows t
+            scala-auto-start-ensime t)
+     ;; lua
+     ;; html
      imenu-list
-     (javascript :variables javascript-backend 'nil)
+     ;; (javascript :variables javascript-backend 'nil)
      gpu
      (c-c++ :variables
             c-c++-backend 'lsp-ccls
@@ -56,20 +64,21 @@
             ;; c-c++-enable-clang-support t
             )
      (cmake :variables cmake-enable-cmake-ide-support t)
-     rust
-     ess
+     ;; rust
+     ;; ess
      (julia :variables
             ;; julia-mode-enable-ess t
             julia-mode-enable-lsp t)
      themes-megapack
-     graphviz
+     ;; graphviz
      yaml
      protobuf
      csv
      (go :variables
          go-tab-width 2
          gofmt-command "goimports"
-         gofmt-before-save t)
+         gofmt-before-save t
+         godoc-at-point-function 'godoc-gogetdoc)
      (chinese :package youdao-dictionary fcitx
               :variables chinese-enable-fcitx nil
               chinese-enable-youdao-dict t)
@@ -78,11 +87,12 @@
                                       all-the-icons
                                       all-the-icons-dired
                                       all-the-icons-ivy
-                                      julia-repl
-                                      julia-mode
-                                      ess
+                                      ;; julia-repl
+                                      ;; julia-mode
+                                      ;; lsp-julia
+                                      ;; ess
                                       sr-speedbar
-                                      cdlatex
+                                      ;; cdlatex
                                       auctex
                                       xah-math-input
                                       ;; lsp-mode
@@ -225,33 +235,40 @@
 (defun dotspacemacs/user-init ()
    (setq tramp-ssh-controlmaster-options
         "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+   (add-to-list 'configuration-layer-elpa-archives '("melpa-stable" . "stable.melpa.org/packages/"))
+   (add-to-list 'package-pinned-packages '(ensime . "melpa-stable"))
   )
 
 (defun dotspacemacs/user-config ()
-  ;; UTF-8
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;UTF-8;;;;;;;;;;;;;;;;;;;;;;;;
   (set-language-environment "UTF-8")
   (set-default-coding-systems 'utf-8)
   (setq locale-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
   (setq powerline-default-separator 'utf-8)
 
-  ;; go-complete
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Golang;;;;;;;;;;;;;;;;;;;;;;;
   (require 'go-autocomplete)
   (require 'auto-complete-config)
   (ac-config-default)
   (setq gofmt-command "goimports")
 
-  ;; python anaconda-mode
-  (setq socks-server '("Default server" "127.0.0.1" 1080 5))
-
-  ;; python elpy
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Python;;;;;;;;;;;;;;;;;;;;;;;
   (setq python-shell-prompt-detect-failure-warning nil)
+  ;; (setq socks-server '("Default server" "127.0.0.1" 1080 5))
 
-  ;; Jalia
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Scala;;;;;;;;;;;;;;;;;;;;;;;;
+  (setq-default flycheck-scalastylerc "~/config/scalastyle_config.xml")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Jalia;;;;;;;;;;;;;;;;;;;;;;;;
   (require 'julia-repl)
   (setq inferior-julia-program-name "/Applications/Julia-1.0.app/Contents/Resources/julia/bin/julia")
-  ;; (add-hook 'julia-mode-hook 'julia-repl-mode)
+  (add-hook 'julia-mode-hook 'julia-repl-mode)
+  ;; (add-to-list 'load-path "~/.emacs.d/private/julia-emacs")
+  ;; (require 'julia-mode)
+  ;; (add-hook 'ess-julia-mode-hook #'lsp-mode)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Orgmode;;;;;;;;;;;;;;;;;;;;;;
   ;; orgmode preview set image size
   (image-type-available-p 'imagemagick)
   (setq org-image-actual-width '(400))
@@ -318,10 +335,10 @@
                                   ))
     )
 
-  ;; bazel
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Bazel;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (add-hook 'bazel-mode-hook (lambda() (add-hook 'before-save-hook #'bazel-format nil t)))
 
-  ;; all-the-icons
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;All The Icons;;;;;;;;;;;;;;;;;;;;;;
   (require 'all-the-icons)
   (use-package all-the-icons)
   (setq neo-theme 'icons)
@@ -330,8 +347,16 @@
   ;; Magit
   ;; (setq-default magit-repository-directories '("~/repos/"))
 
-  ;; LaTex
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LaTex;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; LaTex 指定完整文档预览
   (add-hook 'doc-view-minor-mode-hook 'auto-revert-mode)
+  ;; Acutex
+  (setq TeX-view-program-selection '((output-pdf "Skim")))
+  (setq TeX-source-correlate-mode t)
+  (setq TeX-source-correlate-start-server t)
+  (setq TeX-source-correlate-method 'synctex)
+  (setq TeX-view-program-list '(("PDF Viewer"
+                                 "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
   ;; (setq org-latex-create-formula-image-program 'dvipng)
   ;; math formatting convert image to PDF file and HTML file.
   (setq org-latex-create-formula-image-program 'imagemagick)
@@ -345,7 +370,7 @@
   (global-xah-math-input-mode 1)
   (xah-math-input-mode 1)
 
-  ;; C++
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;C++;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (global-set-key [C-M-tab] 'clang-format-region)
   (add-hook 'c++-mode-hook 'clang-format-bindings)
   (defun clang-format-bindings ()
@@ -367,7 +392,7 @@
   (setq org-latex-default-packages-alist
         (remove '("AUTO" "inputenc" t) org-latex-default-packages-alist))
 
-
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LSP;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (add-hook 'hack-local-variables-hook
             (lambda () (when (derived-mode-p 'python-mode) (lsp))))
   (setq lsp-print-io t)
@@ -392,8 +417,12 @@
     :config
     (require 'lsp-ui))
 
-  ;; Open todo.org
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Dap;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (require 'dap-python)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Todo;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (find-file "~/Dropbox/todo.org")
+
 )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
