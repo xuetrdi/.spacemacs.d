@@ -104,6 +104,8 @@
    dotspacemacs-excluded-packages '(vi-tilde-fringe
                                     clean-aindent-mode
                                     chinese-pyim
+                                    counsel-projectile
+                                    company-quickhelp
                                     evil-args
                                     evil-ediff
                                     evil-mc
@@ -119,22 +121,20 @@
                                     helm-spacemacs-help
                                     helm-themes
                                     helm-c-yasnippet
-                                    counsel-projectile
                                     ;; org-projectile
                                     org-download
-                                    org-timer
+                                    ;; org-timer
                                     ;; org-repo-todo
-                                    ;; org-plus-contrib
+                                    org-plus-contrib
                                     org-brain
-                                    org-present
-                                    orgit
+                                    ;; org-present
+                                    ;; orgit
                                     magit-gh-pulls
                                     magit-gitflow
+                                    magithub
                                     git-gutter
                                     git-gutter-fringe
-                                    company-quickhelp
                                     gh-md
-                                    magithub
                                     smooth-scrolling
                                     eyebrowse
                                     auto-dictionary
@@ -286,17 +286,14 @@
     (plist-put org-format-latex-options :scale 1.5)
     (setq org-todo-keywords
         '((sequence "NEXT(n!)" "TODO(t)" "DOING(i!)" "HANGUP(h!)" "WORK" "LEARN" "|" "DONE(d!)" "CANCELED(c!)")))
-    ;; (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
+    (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
     ;; Babel orgmode execute source code
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '((emacs-lisp . t)
                                    (python . t)
-                                   (dot . t)
                                    (latex . t)
                                    (shell . t)
                                    (C . t)
-                                   (swift . t)
-                                   (go . t)
                                    (julia . t)
                                    ))
     ;; org capture
@@ -344,9 +341,6 @@
   (setq neo-theme 'icons)
   (all-the-icons-ivy-setup)
 
-  ;; Magit
-  ;; (setq-default magit-repository-directories '("~/repos/"))
-
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LaTex;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; LaTex 指定完整文档预览
   (add-hook 'doc-view-minor-mode-hook 'auto-revert-mode)
@@ -376,8 +370,6 @@
   (defun clang-format-bindings ()
     (define-key c++-mode-map [tab] 'clang-format-buffer))
 
-  (c-add-style "mystyle"
-               '((c-basic-offset . 2)))
   ;; (push '(other . "gnu") c-default-style)
 
   (require 'sr-speedbar)
@@ -422,7 +414,7 @@
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Todo;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (find-file "~/Dropbox/todo.org")
-
+  (setq default-directory "~/")
 )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
