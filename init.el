@@ -5,7 +5,7 @@
    dotspacemacs-ask-for-lazy-installation t
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
-   '(
+   '(html
      ivy
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t)
@@ -31,25 +31,27 @@
      (shell :variables shell-default-shell 'zsh)
      dap
      lsp
-     ipython-notebook
-     (python :variables ;;
-             ;; python-backend 'anaconda
-             python-sort-imports-on-save t
+     (python :variables
+             python-backend 'lsp
+             python-sort-imports-on-save nil
+             python-formatter 'yapf
              python-tab-width 2
              python-indent-offset 2)
-     (swift :variables
-            swift-tab-width 2
-            swift-indent-offset 2)
+     scheme
+     (clojure :variables
+              clojure-enable-fancify-symbols t)
      (scala :variables
             scala-indent:use-javadoc-style t
             scala-enable-eldoc t
             scala-auto-insert-asterisk-in-comments t
             scala-use-unicode-arrows t
             scala-auto-start-ensime t)
-     ;; lua
-     ;; html
      imenu-list
-     ;; (javascript :variables javascript-backend 'nil)
+     (javascript :variables javascript-backend 'nil)
+     (typescript :variables
+                 typescript-fmt-on-save t
+                 typescript-fmt-tool 'typescript-formatter
+                 typescript-linter 'tslint)
      gpu
      (c-c++ :variables
             c-c++-backend 'lsp-ccls
@@ -60,20 +62,20 @@
             c-c++-lsp-executable (file-truename "~/config/ccls/Release/ccls")
             c-c++-lsp-sem-highlight-rainbow t
             c-c++-lsp-sem-highlight-method 'font-lock
-            c-c++-lsp-cache-dir "/tm/lsp-ccls"
+            c-c++-lsp-cache-dir "/tmp/lsp-ccls"
             ;; c-c++-enable-clang-support t
             )
      (cmake :variables cmake-enable-cmake-ide-support t)
-     ;; rust
-     ;; ess
+     (rust :variables
+           rust-backend 'lsp)
      (julia :variables
-            ;; julia-mode-enable-ess t
+            julia-mode-enable-ess nil
             julia-mode-enable-lsp t)
      themes-megapack
-     ;; graphviz
      yaml
      protobuf
      csv
+     swift
      (go :variables
          go-tab-width 2
          gofmt-command "goimports"
@@ -87,25 +89,16 @@
                                       all-the-icons
                                       all-the-icons-dired
                                       all-the-icons-ivy
-                                      ;; julia-repl
-                                      ;; julia-mode
-                                      ;; lsp-julia
-                                      ;; ess
                                       sr-speedbar
-                                      ;; cdlatex
                                       auctex
                                       xah-math-input
-                                      ;; lsp-mode
-                                      ;; lsp-ui
-                                      ;; company-lsp
-                                      ;; dap-gdb-lldb-setup
                                       )
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages '(vi-tilde-fringe
                                     clean-aindent-mode
                                     chinese-pyim
                                     counsel-projectile
-                                    company-quickhelp
+                                    ;; company-quickhelp
                                     evil-args
                                     evil-ediff
                                     evil-mc
@@ -118,15 +111,15 @@
                                     helm-swoop
                                     helm-purpose
                                     helm-flyspell
-                                    helm-spacemacs-help
+                                    ;; helm-spacemacs-help
                                     helm-themes
                                     helm-c-yasnippet
                                     ;; org-projectile
-                                    org-download
+                                    ;; org-download
                                     ;; org-timer
                                     ;; org-repo-todo
-                                    org-plus-contrib
-                                    org-brain
+                                    ;; org-plus-contrib
+                                    ;; org-brain
                                     ;; org-present
                                     ;; orgit
                                     magit-gh-pulls
@@ -164,8 +157,8 @@
    dotspacemacs-scratch-mode 'text-mode
    dotspacemacs-themes '(
                          seti
-                         badwolf
                          bubbleberry
+                         badwolf
                          cherry-blossom
                          ir-black
                          spolsky
@@ -235,8 +228,6 @@
 (defun dotspacemacs/user-init ()
    (setq tramp-ssh-controlmaster-options
         "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-   (add-to-list 'configuration-layer-elpa-archives '("melpa-stable" . "stable.melpa.org/packages/"))
-   (add-to-list 'package-pinned-packages '(ensime . "melpa-stable"))
   )
 
 (defun dotspacemacs/user-config ()
@@ -246,6 +237,9 @@
   (setq locale-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
   (setq powerline-default-separator 'utf-8)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Clojure;;;;;;;;;;;;;;;;;;;;;;;
+  (setq clojure-enable-linters t)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Golang;;;;;;;;;;;;;;;;;;;;;;;
   (require 'go-autocomplete)
@@ -258,12 +252,12 @@
   ;; (setq socks-server '("Default server" "127.0.0.1" 1080 5))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Scala;;;;;;;;;;;;;;;;;;;;;;;;
-  (setq-default flycheck-scalastylerc "~/config/scalastyle_config.xml")
+  ;; (setq-default flycheck-scalastylerc "~/config/scalastyle_config.xml")
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Jalia;;;;;;;;;;;;;;;;;;;;;;;;
-  (require 'julia-repl)
+  ;; (require 'julia-repl)
   (setq inferior-julia-program-name "/Applications/Julia-1.0.app/Contents/Resources/julia/bin/julia")
-  (add-hook 'julia-mode-hook 'julia-repl-mode)
+  ;; (add-hook 'julia-mode-hook 'julia-repl-mode)
   ;; (add-to-list 'load-path "~/.emacs.d/private/julia-emacs")
   ;; (require 'julia-mode)
   ;; (add-hook 'ess-julia-mode-hook #'lsp-mode)
@@ -285,8 +279,7 @@
     ;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
     (plist-put org-format-latex-options :scale 1.5)
     (setq org-todo-keywords
-        '((sequence "NEXT(n!)" "TODO(t)" "DOING(i!)" "HANGUP(h!)" "WORK" "LEARN" "|" "DONE(d!)" "CANCELED(c!)")))
-    (setq org-bullets-bullet-list '("◉" "○" "✸" "✿"))
+        '((sequence "NEXT(n!)" "TODO(t)" "HANG(h!)" "WORK(w!)" "LEARN(l!)" "|" "DONE(d!)" "CANCELED(c!)")))
     ;; Babel orgmode execute source code
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '((emacs-lisp . t)
@@ -297,7 +290,6 @@
                                    (julia . t)
                                    ))
     ;; org capture
-    ;; (server-start)
     (require 'org-capture)
     (global-set-key (kbd "C-c c") 'org-capture)
     (setq org-default-notes-file "~/org/inbox.org")
@@ -308,14 +300,10 @@
                                    "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n")
                                   ("r" "Book Reading Task" entry (file+olp "~/Dropbox/org/reading.org" "Reading" "Book")
                                    "* TODO %^{书名}\n%u\n%a\n" :clock-in t :clock-resume t)
-                                  ("t" "Work Task" entry (file+headline "~/Dropbox/org/task.org" "Work")
-                                   "* TODO %^{任务名}\n%u\n%a\n" :clock-in t :clock-resume t)
                                   ("w" "Web Collections" entry (file+headline "~/Dropbox/org/link.org" "Web")
                                    "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
                                   ("i" "Inbox" entry (file "~/Dropbox/org/inbox.org")
                                    "* %^{heading} %t %^g\n %?\n")
-                                  ("c" "Contacts" entry (file "~/Dorpbox/org/contacts.org")
-                                   "* %^{姓名} %^{手机号} %^{邮箱} %^{住址}p\n\n %?" :empty-lines 1)
                                   ("b" "Blog" plain (file ,(concat "~/Dropbox/org/blog/"
                                                                    (format-time-string "%Y-%m-%d.org")))
                                    ,(concat "#+startup: showall\n"
@@ -338,6 +326,7 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;All The Icons;;;;;;;;;;;;;;;;;;;;;;
   (require 'all-the-icons)
   (use-package all-the-icons)
+  (setq inhibit-compacting-font-caches t)
   (setq neo-theme 'icons)
   (all-the-icons-ivy-setup)
 
@@ -417,26 +406,12 @@
   (setq default-directory "~/")
 )
 (defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(safe-local-variable-values
-   (quote
-    ((python-backend . lsp)
-     (javascript-backend . tern)
-     (javascript-backend . lsp)
-     (go-backend . go-mode)
-     (go-backend . lsp)))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+  (custom-set-variables
+   '(safe-local-variable-values
+     (quote
+      ((python-backend . lsp)
+       (javascript-backend . tern)
+       (javascript-backend . lsp)
+       (go-backend . go-mode)
+       (go-backend . lsp)))))
 )
