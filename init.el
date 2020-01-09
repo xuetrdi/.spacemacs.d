@@ -19,16 +19,16 @@
      emacs-lisp
      (git :variables
           git-magit-status-fullscreen t)
-     (markdown :variables markdown-live-preview-engine 'vmd)
      dash
      org
-     (gtags :variables gtags-enable-by-default t)
      (latex :variables
             latex-build-command "LaTex"
             latex-enable-auto-fill t
             latex-enable-folding t
             latex-enable-magic t)
      (shell :variables shell-default-shell 'zsh)
+     (docker :variables
+             docker-dockerfile-backend 'lsp)
      dap
      lsp
      (python :variables
@@ -47,19 +47,25 @@
             scala-use-unicode-arrows t
             scala-auto-start-ensime t)
      imenu-list
-     (javascript :variables javascript-backend 'nil)
-     (typescript :variables
-                 typescript-fmt-on-save t
-                 typescript-fmt-tool 'typescript-formatter
-                 typescript-linter 'tslint)
+     (javascript :variables
+                 js2-basic-offset 2
+                 js-indent-level 2
+                 javascript-import-tool 'import-js
+                 javascript-backend 'lsp
+                 javascript-fmt-tool 'prettier
+                 javascript-fmt-on-save t
+                 javascript-repl `nodejs)
+     ;; (typescript :variables
+     ;;             typescript-fmt-on-save t
+     ;;             typescript-fmt-tool 'typescript-formatter
+     ;;             typescript-linter 'tslint)
      gpu
      (c-c++ :variables
             c-c++-backend 'lsp-ccls
-            ;; c-c++-backend 'rtags
             c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-google-style t
             c-c++-enable-google-newline t
-            c-c++-lsp-executable (file-truename "~/config/ccls/Release/ccls")
+            c-c++-lsp-executable (file-truename "/usr/local/bin/ccls")
             c-c++-lsp-sem-highlight-rainbow t
             c-c++-lsp-sem-highlight-method 'font-lock
             c-c++-lsp-cache-dir "/tmp/lsp-ccls"
@@ -68,15 +74,14 @@
      (cmake :variables cmake-enable-cmake-ide-support t)
      (rust :variables
            rust-backend 'lsp)
-     (julia :variables
-            julia-mode-enable-ess nil
-            julia-mode-enable-lsp t)
-     themes-megapack
-     yaml
+     ;; (julia :variables
+     ;;        julia-mode-enable-ess nil
+     ;;        julia-mode-enable-lsp t)
+     ;; themes-megapack
+     ;; yaml
      protobuf
-     csv
-     swift
      (go :variables
+         go-backend 'lsp
          go-tab-width 2
          gofmt-command "goimports"
          gofmt-before-save t
@@ -98,15 +103,15 @@
                                     clean-aindent-mode
                                     chinese-pyim
                                     counsel-projectile
-                                    ;; company-quickhelp
-                                    evil-args
-                                    evil-ediff
-                                    evil-mc
-                                    evil-exchange
-                                    evil-unimpaired
-                                    evil-indent-plus
-                                    evil-escape
-                                    evil-lisp-state
+                                    company-quickhelp
+                                    ;; evil-args
+                                    ;; evil-ediff
+                                    ;; evil-mc
+                                    ;; evil-exchange
+                                    ;; evil-unimpaired
+                                    ;; evil-indent-plus
+                                    ;; evil-escape
+                                    ;; evil-lisp-state
                                     helm-flyspell
                                     helm-swoop
                                     helm-purpose
@@ -128,8 +133,8 @@
                                     git-gutter
                                     git-gutter-fringe
                                     gh-md
-                                    smooth-scrolling
-                                    eyebrowse
+                                    ;; smooth-scrolling
+                                    ;; eyebrowse
                                     auto-dictionary
                                     flyspell-correct-helm
                                     ivy-purpose
@@ -252,11 +257,11 @@
   ;; (setq socks-server '("Default server" "127.0.0.1" 1080 5))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Scala;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; (setq-default flycheck-scalastylerc "~/config/scalastyle_config.xml")
+  (setq-default flycheck-scalastylerc "~/conf/scalastyle_config.xml")
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Jalia;;;;;;;;;;;;;;;;;;;;;;;;
   ;; (require 'julia-repl)
-  (setq inferior-julia-program-name "/Applications/Julia-1.0.app/Contents/Resources/julia/bin/julia")
+  ;; (setq inferior-julia-program-name "/Applications/Julia-1.0.app/Contents/Resources/julia/bin/julia")
   ;; (add-hook 'julia-mode-hook 'julia-repl-mode)
   ;; (add-to-list 'load-path "~/.emacs.d/private/julia-emacs")
   ;; (require 'julia-mode)
@@ -271,6 +276,48 @@
   (setq org-export-with-sub-superscripts nil)
   ;; orgmode latex preview
   ;; (startup-latex-with-latex-preview t)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Org-Protocol;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defun org-as-mac-chrome-get-frontmost-url ()
+  (let ((result
+	 (do-applescript
+	  (concat
+	   "set frontmostApplication to path to frontmost application\n"
+	   "tell application \"Google Chrome\"\n"
+	   "	set theUrl to get URL of active tab of first window\n"
+	   "	set theResult to (get theUrl) & \"::split::\" & (get name of window 1)\n"
+	   "end tell\n"
+	   "activate application (frontmostApplication as text)\n"
+	   "set links to {}\n"
+	   "copy theResult to the end of links\n"
+	   "return links as string\n"))))
+    (replace-regexp-in-string
+     "^\"\\|\"$" "" (car (split-string result "[\r\n]+" t)))))
+
+  (defun org-mac-paste-applescript-links (as-link-list)
+    "Paste in a list of links from an applescript handler.
+     The links are of the form <link>::split::<name>."
+    (let* ((noquote-as-link-list
+            (if (string-prefix-p "\"" as-link-list)
+                (substring as-link-list 1 -1)
+              as-link-list))
+           (link-list
+            (mapcar (lambda (x) (if (string-match "\\`\"\\(.*\\)\"\\'" x)
+                                    (setq x (match-string 1 x)))
+                      x)
+                    (split-string noquote-as-link-list "[\r\n]+")))
+           split-link URL description orglink orglink-insert rtn orglink-list)
+      (while link-list
+        (setq split-link (split-string (pop link-list) "::split::"))
+        (setq URL (car split-link))
+        (setq description (cadr split-link))
+        (when (not (string= URL ""))
+          (setq orglink (org-make-link-string URL description))
+          (push orglink orglink-list)))
+      (setq rtn (mapconcat 'identity orglink-list "\n"))
+      (kill-new rtn)
+      rtn))
+
   ;; orgmode hotkey, such as <s
   (require 'org-tempo)
   ;; orgmode todolist
@@ -279,7 +326,7 @@
     ;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
     (plist-put org-format-latex-options :scale 1.5)
     (setq org-todo-keywords
-        '((sequence "NEXT(n!)" "TODO(t)" "HANG(h!)" "WORK(w!)" "LEARN(l!)" "|" "DONE(d!)" "CANCELED(c!)")))
+        '((sequence "NEXT(n @/!)" "TODO(t)" "HANG(h @/!)" "WORK(w!)" "LEARN(l!)" "|" "DONE(d!)" "CANCELED(c @/!)")))
     ;; Babel orgmode execute source code
     (org-babel-do-load-languages 'org-babel-load-languages
                                  '((emacs-lisp . t)
@@ -287,17 +334,27 @@
                                    (latex . t)
                                    (shell . t)
                                    (C . t)
-                                   (julia . t)
+                                   ;; (julia . t)
                                    ))
     ;; org capture
     (require 'org-capture)
     (global-set-key (kbd "C-c c") 'org-capture)
-    (setq org-default-notes-file "~/org/inbox.org")
+    (setq org-default-notes-file "~/Dropbox/org/inbox.org")
     (setq org-capture-templates `(
+                                  ("t" "TODO" entry (file+headline "~/Dropbox/org/gtd.org" "Task")
+                                   "* TODO [#B] %?\n %i\n"
+                                   :empty-lines 1)
+                                  ;; ("c" "Chrome" entry (file+headline "~/Dropbox/org/link.org" "Quick notes")
+                                  ;;  "* TODO [#C] %?\n (zilongshanren/retrieve-chrome-current-tab-url)\n %i\n %U"
+                                  ;;  :empty-lines 1)
+                                  ("c" "Chrome" entry (file+headline "~/Dropbox/org/link.org" "Quick notes")
+                                   "* TODO [#C] %?\n %(org-mac-paste-applescript-links (org-as-mac-chrome-get-frontmost-url))\n %i\n %U"
+                                   :empty-lines 1)
+
+	                                ("l" "Protocol Link" entry (file+headline "~/Dropbox/org/link.org" "Inbox")
+                                   "* TODO [#C] %?\n %i\n %a \n %U")
 	                                ("p" "Protocol" entry (file+headline ,(concat org-directory "~/Dropbox/org/notes.org") "Inbox")
                                    "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
-	                                ("L" "Protocol Link" entry (file+headline ,(concat org-directory "~/Dropbox/org/notes.org") "Inbox")
-                                   "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n")
                                   ("r" "Book Reading Task" entry (file+olp "~/Dropbox/org/reading.org" "Reading" "Book")
                                    "* TODO %^{书名}\n%u\n%a\n" :clock-in t :clock-resume t)
                                   ("w" "Web Collections" entry (file+headline "~/Dropbox/org/link.org" "Web")
@@ -320,6 +377,25 @@
                                   ))
     )
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Agenda;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; 加入日程表文件
+  (setq org-agenda-files (list '("~/Dropbox/org")))
+  (setq org-agenda-custom-commands
+        '(
+          ("w" . "Task")
+          ("wa" "Important&Hurry" tags-todo "+PRIORITY=\"A\"")
+          ("wb" "Important&NoHurry" tags-todo "-weekly-monthly-daily+PRIORITY=\"B\"")
+          ("wc" "NoImportant&Hurry" tags-todo "+PRIORITY=\"C\"")
+          ("W" "Weekly Review"
+           ((stuck "")
+            (tags-todo "work")
+            (tags-todo "learn")
+            (tags-todo "daily")
+            (tags-todo "weekly")
+            (tags-todo "code")
+            (tags-todo "thing"))))
+        )
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Bazel;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (add-hook 'bazel-mode-hook (lambda() (add-hook 'before-save-hook #'bazel-format nil t)))
 
@@ -340,10 +416,10 @@
   (setq TeX-source-correlate-method 'synctex)
   (setq TeX-view-program-list '(("PDF Viewer"
                                  "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-  ;; (setq org-latex-create-formula-image-program 'dvipng)
+  (setq org-latex-create-formula-image-program 'dvipng)
   ;; math formatting convert image to PDF file and HTML file.
   (setq org-latex-create-formula-image-program 'imagemagick)
-  ;; (setq org-preview-latex-process-alist 'imagemagick)
+  (setq org-preview-latex-process-alist 'imagemagick)
   ;; LaTex 输出PDF高亮代码, hotkey: C-c C-e l l
   ;; pdflatex -shell-escape -interaction nonstopmode <tex-file>
   (setq org-latex-listings 'minted)
@@ -358,8 +434,6 @@
   (add-hook 'c++-mode-hook 'clang-format-bindings)
   (defun clang-format-bindings ()
     (define-key c++-mode-map [tab] 'clang-format-buffer))
-
-  ;; (push '(other . "gnu") c-default-style)
 
   (require 'sr-speedbar)
 
@@ -402,7 +476,8 @@
   (require 'dap-python)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Todo;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (find-file "~/Dropbox/todo.org")
+  (find-file "~/Dropbox/org/week.org")
+  (find-file "~/Dropbox/org/todo.org")
   (setq default-directory "~/")
 )
 (defun dotspacemacs/emacs-custom-settings ()
@@ -410,7 +485,6 @@
    '(safe-local-variable-values
      (quote
       ((python-backend . lsp)
-       (javascript-backend . tern)
        (javascript-backend . lsp)
        (go-backend . go-mode)
        (go-backend . lsp)))))
