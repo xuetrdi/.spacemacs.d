@@ -344,9 +344,6 @@
                                   ("t" "TODO" entry (file+headline "~/Dropbox/org/gtd.org" "Task")
                                    "* TODO [#B] %?\n %i\n"
                                    :empty-lines 1)
-                                  ;; ("c" "Chrome" entry (file+headline "~/Dropbox/org/link.org" "Quick notes")
-                                  ;;  "* TODO [#C] %?\n (zilongshanren/retrieve-chrome-current-tab-url)\n %i\n %U"
-                                  ;;  :empty-lines 1)
                                   ("c" "Chrome" entry (file+headline "~/Dropbox/org/link.org" "Quick notes")
                                    "* TODO [#C] %?\n %(org-mac-paste-applescript-links (org-as-mac-chrome-get-frontmost-url))\n %i\n %U"
                                    :empty-lines 1)
