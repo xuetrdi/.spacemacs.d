@@ -347,7 +347,6 @@
                                   ("c" "Chrome" entry (file+headline "~/Dropbox/org/link.org" "Quick notes")
                                    "* TODO [#C] %?\n %(org-mac-paste-applescript-links (org-as-mac-chrome-get-frontmost-url))\n %i\n %U"
                                    :empty-lines 1)
-
 	                                ("l" "Protocol Link" entry (file+headline "~/Dropbox/org/link.org" "Inbox")
                                    "* TODO [#C] %?\n %i\n %a \n %U")
 	                                ("p" "Protocol" entry (file+headline ,(concat org-directory "~/Dropbox/org/notes.org") "Inbox")
@@ -358,8 +357,7 @@
                                    "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
                                   ("i" "Inbox" entry (file "~/Dropbox/org/inbox.org")
                                    "* %^{heading} %t %^g\n %?\n")
-                                  ("b" "Blog" plain (file ,(concat "~/Dropbox/org/blog/"
-                                                                   (format-time-string "%Y-%m-%d.org")))
+                                  ("b" "Blog" plain (file ,(concat "~/Dropbox/org/blog/" (format-time-string "%Y-%m-%d.org")))
                                    ,(concat "#+startup: showall\n"
                                             "#+options: toc:nil\n"
                                             "#+begin_export html\n"
