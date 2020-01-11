@@ -74,6 +74,7 @@
      (cmake :variables cmake-enable-cmake-ide-support t)
      (rust :variables
            rust-backend 'lsp)
+     swift
      ;; (julia :variables
      ;;        julia-mode-enable-ess nil
      ;;        julia-mode-enable-lsp t)
@@ -97,6 +98,7 @@
                                       sr-speedbar
                                       auctex
                                       xah-math-input
+                                      lsp-sourcekit
                                       )
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages '(vi-tilde-fringe
@@ -318,6 +320,21 @@
       (kill-new rtn)
       rtn))
 
+  (defun org-capture-template-goto-link ()
+    (org-capture-put :target (list 'file+headline
+                                   (nth 1 (org-capture-get :target))
+                                   (org-capture-get :annotation)))
+    (org-capture-put-target-region-and-position)
+    (widen)
+    (let ((hd (nth 2 (org-capture-get :target))))
+      (goto-char (point-min))
+      (if (re-search-forward
+           (format org-complex-heading-regexp-format (regexp-quote hd)) nil t)
+          (org-end-of-subtree)
+        (goto-char (point-max))
+        (or (bolp) (insert "\n"))
+        (insert "* " hd "\n"))))
+
   ;; orgmode hotkey, such as <s
   (require 'org-tempo)
   ;; orgmode todolist
@@ -349,8 +366,10 @@
                                    :empty-lines 1)
 	                                ("l" "Protocol Link" entry (file+headline "~/Dropbox/org/link.org" "Inbox")
                                    "* TODO [#C] %?\n %i\n %a \n %U")
-	                                ("p" "Protocol" entry (file+headline ,(concat org-directory "~/Dropbox/org/notes.org") "Inbox")
+                                  ("p" "Protocol" entry (file+headline ,(concat org-directory "~/Dropbox/org/notes.org") "Inbox")
                                    "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
+                                  ("s" "Code Snippet" entry (file+headline "~/Dropbox/org/code.org" "Snippet")
+                                   "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
                                   ("r" "Book Reading Task" entry (file+olp "~/Dropbox/org/reading.org" "Reading" "Book")
                                    "* TODO %^{书名}\n%u\n%a\n" :clock-in t :clock-resume t)
                                   ("w" "Web Collections" entry (file+headline "~/Dropbox/org/link.org" "Web")
@@ -466,6 +485,14 @@
     :ensure t
     :config
     (require 'lsp-ui))
+
+  (use-package lsp-sourcekit
+    :after lsp-mode
+    :config
+    (setenv "SOURCEKIT_TOOLCHAIN_PATH" "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain")
+    (setq lsp-sourcekit-executable (expand-file-name "/usr/local/build/sourcekit-lsp/.build/debug/sourcekit-lsp")))
+  (use-package swift-mode
+    :hook (swift-mode . (lambda () (lsp))))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Dap;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (require 'dap-python)
