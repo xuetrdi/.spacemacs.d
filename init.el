@@ -91,7 +91,8 @@
               :variables chinese-enable-fcitx nil
               chinese-enable-youdao-dict t)
    )
-   dotspacemacs-additional-packages '(go-autocomplete
+   dotspacemacs-additional-packages '(
+                                      go-autocomplete
                                       all-the-icons
                                       all-the-icons-dired
                                       all-the-icons-ivy
@@ -99,6 +100,7 @@
                                       auctex
                                       xah-math-input
                                       lsp-sourcekit
+                                      eglot
                                       )
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages '(vi-tilde-fringe
@@ -339,6 +341,7 @@
   (require 'org-tempo)
   ;; orgmode todolist
   (with-eval-after-load 'org
+    (setq org-bullets-bullet-list '("❀" "♪" "♩" "の"))
     ;; 进入Orgmode后转入cdlatex
     ;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
     (plist-put org-format-latex-options :scale 1.5)
@@ -351,6 +354,15 @@
                                    (latex . t)
                                    (shell . t)
                                    (C . t)
+                                   (clojure . t)
+                                   ;; (java . t)
+                                   (js . t)
+                                   ;; (lua . t)
+                                   ;; (matlab . t)
+                                   (org . t)
+                                   (scheme . t)
+                                   ;; (sql . t)
+                                   ;; (css . t)
                                    ;; (julia . t)
                                    ))
     ;; org capture
@@ -470,7 +482,10 @@
     :config
     (require 'company-lsp)
     (push 'company-lsp company-backends)
-    (add-hook 'after-init-hook 'global-company-mode))
+    (add-hook 'after-init-hook 'global-company-mode)
+    ;; (add-to-list 'company-lsp-filter-candidates '(texlab . nil))
+    ;; (add-to-list 'company-lsp-filter-candidates '(digestif . nil))
+    )
 
   (use-package lsp-mode
     :ensure t
@@ -497,17 +512,27 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Dap;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (require 'dap-python)
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Eglot;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (require 'eglot)
+  (add-to-list 'eglot-server-programs '((latex-mode tex-mode context-mode texinfo-mode bibtex-mode)
+                                        . ("/usr/local/bin/texlab")))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Todo;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (find-file "~/Dropbox/org/week.org")
+  ;; (find-file "~/Dropbox/org/week.org")
   (find-file "~/Dropbox/org/todo.org")
   (setq default-directory "~/")
 )
 (defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
   (custom-set-variables
    '(safe-local-variable-values
      (quote
       ((python-backend . lsp)
        (javascript-backend . lsp)
        (go-backend . go-mode)
-       (go-backend . lsp)))))
+       (go-backend . lsp)
+       ))))
 )
