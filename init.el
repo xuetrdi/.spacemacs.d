@@ -11,8 +11,10 @@
                       auto-completion-enable-snippets-in-popup t)
      better-defaults
      (syntax-checking :variables
-                      syntax-checking-enable-by-default t
-                      syntax-checking-enable-tooltips nil
+                      syntax-checking-enable-by-default nil
+                      syntax-checking-enable-tooltips t
+                      syntax-checking-use-standard-error-navigation nil
+                      syntax-checking-auto-hide-tooltips 2
                       :disabled-for
                       go
                       python
@@ -31,6 +33,7 @@
      lsp
      (python :variables
              python-backend 'lsp
+             ;; python-lsp-server 'pyright
              python-lsp-server 'mspyls
              python-lsp-git-root "/usr/local/build/python-language-server"
              python-sort-imports-on-save nil
@@ -48,7 +51,11 @@
             c-c++-lsp-sem-highlight-method 'font-lock
             ;; c-c++-lsp-cache-dir "/tmp/lsp-ccls"
             )
-     (cmake :variables cmake-enable-cmake-ide-support t)
+     (cmake :variables
+            cmake-enable-cmake-ide-support t
+            cmake-backend 'company-cmake
+            ;; cmake-backend 'lsp
+            )
      swift
      rust
      protobuf
@@ -98,9 +105,9 @@
                                     helm-themes
                                     helm-c-yasnippet
                                     org-projectile
-                                    org-download
+                                    ;; org-download
                                     org-timer
-                                    org-repo-todo
+                                    ;; org-repo-todo
                                     ;; org-plus-contrib
                                     org-brain
                                     org-present
@@ -113,7 +120,7 @@
                                     gh-md
                                     smooth-scrolling
                                     eyebrowse
-                                    auto-dictionary
+                                    ;; auto-dictionary
                                     flyspell-correct-helm
                                     ivy-purpose
                                     spacemacs-purpose-popwin
@@ -144,7 +151,7 @@
                          spacemacs-light)
    dotspacemacs-colorize-cursor-according-to-state t
    dotspacemacs-default-font '("Monaco"
-                               :size 16
+                               :size 18
                                :weight normal
                                :width normal
                                :powerline-scale 1.2
@@ -229,16 +236,6 @@
     ;; Automatically save project python buffers before refactorings
     (setq ropemacs-confirm-saving 'nil)
     )
-  ;; (global-set-key "\C-xpl" 'load-ropemacs)
-  ;; (require 'pymacs)
-  ;; (pymacs-load "ropemacs" "rope-")
-  ;; (autoload 'pymacs-load "pymacs" nil t)
-  ;; (autoload 'pymacs-eval "pymacs" nil t)
-  ;; (autoload 'pymacs-apply "pymacs")
-  ;; (autoload 'pymacs-call "pymacs")
-  ;; (autoload 'pymacs-exec "pymacs" nil t)
-  ;; (global-set-key [(meta ?/)] 'rope-code-assist)
-  ;; (setq ropemacs-confirm-saving 'nil)
   (add-hook 'python-mode-hook 'load-ropemacs)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Clojure;;;;;;;;;;;;;;;;;;;;;;;
@@ -302,7 +299,12 @@
   (require 'org-tempo)
   ;; orgmode todolist
   (with-eval-after-load 'org
-    (setq org-bullets-bullet-list '("❀" "♪" "♩" "の"))
+    (setq org-bullets-bullet-list '("☯" "☰" "☱" "☲"))
+    ;; (setq org-bullets-bullet-list '("☯" "☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"))
+    ;; (setq org-bullets-bullet-list '("᭄" "ஐ" "൬" "က" "რ" "๓"))
+    ;; (setq org-bullets-bullet-list '("ஐ" "൬" "က" "ಇ" "დ" "๓"))
+    ;; (setq org-bullets-bullet-list '("﹏ૡ" "﹏ૡૡ" "﹏ૡૡૡ" "﹏ૡૡૡૡ" "﹏ૡૡૡૡૡ" "﹏ૡૡૡૡૡૡ"))
+    ;; (setq org-bullets-bullet-list '("❀" "♪" "♩" "の"))
     ;; 进入Orgmode后转入cdlatex
     ;; (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
     (plist-put org-format-latex-options :scale 1.5)
@@ -316,7 +318,6 @@
                                    (shell . t)
                                    (C . t)
                                    ;; (clojure . t)
-                                   ;; (java . t)
                                    (js . t)
                                    ;; (lua . t)
                                    ;; (matlab . t)
@@ -423,14 +424,14 @@
   (add-hook 'hack-local-variables-hook
             (lambda () (when (derived-mode-p 'python-mode) (lsp))))
   (setq lsp-print-io t)
-  (use-package company-lsp
-    :ensure t
-    :config
-    (require 'company-lsp)
-    (push 'company-lsp company-backends)
-    (add-hook 'after-init-hook 'global-company-mode)
-    (add-to-list 'company-lsp-filter-candidates '(digestif . nil))
-    )
+  ;; (use-package company-lsp
+  ;;   :ensure t
+  ;;   :config
+  ;;   (require 'company-lsp)
+  ;;   (push 'company-lsp company-backends)
+  ;;   (add-hook 'after-init-hook 'global-company-mode)
+  ;;   (add-to-list 'company-lsp-filter-candidates '(digestif . nil))
+  ;;   )
 
   (use-package lsp-mode
     :ensure t
@@ -445,6 +446,12 @@
     :ensure t
     :config
     (require 'lsp-ui))
+
+  (use-package lsp-pyright
+    :ensure t
+    :hook (python-mode . (lambda ()
+                           (require 'lsp-pyright)
+                           (lsp))))
 
   (use-package lsp-sourcekit
     :after lsp-mode
