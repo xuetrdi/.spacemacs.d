@@ -5,7 +5,7 @@
    dotspacemacs-ask-for-lazy-installation t
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
-   '(html
+   '(
      ivy
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t)
@@ -18,38 +18,41 @@
                       :disabled-for
                       go
                       python
-                      c++)
+                      )
      emacs-lisp
      (git :variables
           git-magit-status-fullscreen t)
      dash
+     dap
+     (docker :variables
+             docker-dockerfile-backend 'lsp)
      org
      (latex :variables
             latex-build-command "LaTex"
             latex-enable-auto-fill t
             latex-enable-folding t
             latex-enable-magic t)
-     dap
      lsp
      (python :variables
              python-backend 'lsp
-             ;; python-lsp-server 'pyright
-             python-lsp-server 'mspyls
-             python-lsp-git-root "/usr/local/build/python-language-server"
+             python-lsp-server 'pyright
+             ;; python-lsp-server 'mspyls
+             ;; python-lsp-git-root "/usr/local/build/python-language-server"
+             python-test-runner 'pytest
              python-sort-imports-on-save nil
              python-formatter 'yapf
              python-tab-width 2
              python-indent-offset 2)
      imenu-list
      (c-c++ :variables
-            ;; c-c++-backend 'lsp-ccls
+            c-c++-backend 'lsp-ccls
             c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-google-style t
             c-c++-enable-google-newline t
-            ;; c-c++-lsp-executable (file-truename "/usr/local/bin/ccls")
+            c-c++-lsp-executable (file-truename "/usr/local/bin/ccls")
             c-c++-lsp-sem-highlight-rainbow t
             c-c++-lsp-sem-highlight-method 'font-lock
-            ;; c-c++-lsp-cache-dir "/tmp/lsp-ccls"
+            c-c++-lsp-cache-dir "/tmp/lsp-ccls"
             )
      (cmake :variables
             cmake-enable-cmake-ide-support t
@@ -407,6 +410,14 @@
   (add-hook 'c++-mode-hook 'clang-format-bindings)
   (defun clang-format-bindings ()
     (define-key c++-mode-map [tab] 'clang-format-buffer))
+  ;; 修复系统头文件导入
+  ;; (with-eval-after-load 'ccls
+  ;;   (when (eq system-type 'darwin)
+  ;;     (setq ccls-initialization-options
+  ;;           `(:clang ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
+  ;;                                       "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+  ;;                                       "-isystem/usr/local/include"]
+  ;;                           :resourceDir (string-trim (shell-command-to-string "clang -print-resource-dir")))))))
 
   (require 'sr-speedbar)
 
@@ -462,7 +473,10 @@
     :hook (swift-mode . (lambda () (lsp))))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Dap;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (setq dap-auto-configure-features '(session locals controls tooltip))
   (require 'dap-python)
+  (require 'dap-gdb-lldb)
+  (require 'dap-go)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Todo;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; (find-file "~/Dropbox/org/week.org")
