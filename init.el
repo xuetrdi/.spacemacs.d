@@ -20,13 +20,15 @@
                       python
                       )
      emacs-lisp
+     scheme
      (git :variables
           git-magit-status-fullscreen t)
      dash
      dap
      (docker :variables
              docker-dockerfile-backend 'lsp)
-     org
+     (org :variables
+          org-projectile-file  "TODOs.org")
      (latex :variables
             latex-build-command "LaTex"
             latex-enable-auto-fill t
@@ -36,8 +38,6 @@
      (python :variables
              python-backend 'lsp
              python-lsp-server 'pyright
-             ;; python-lsp-server 'mspyls
-             ;; python-lsp-git-root "/usr/local/build/python-language-server"
              python-test-runner 'pytest
              python-sort-imports-on-save nil
              python-formatter 'yapf
@@ -56,9 +56,16 @@
             )
      (cmake :variables
             cmake-enable-cmake-ide-support t
-            cmake-backend 'company-cmake
-            ;; cmake-backend 'lsp
+            ;; cmake-backend 'company-cmake
+            cmake-backend 'lsp
             )
+     (javascript :variables
+                 javascript-backend 'lsp
+                 javascript-import-tool 'import-js
+                 javascript-lsp-linter nil
+                 javascript-fmt-tool 'prettier
+                 javascript-fmt-on-save t
+                 )
      swift
      rust
      protobuf
@@ -78,11 +85,10 @@
                                       all-the-icons-dired
                                       all-the-icons-ivy
                                       sr-speedbar
-                                      company-lsp
                                       auctex
                                       ;; xah-math-input
                                       lsp-sourcekit
-                                      emr
+                                      ;; emr
                                       ;; eglot
                                       ;; valign-mode
                                       )
@@ -107,14 +113,14 @@
                                     helm-spacemacs-help
                                     helm-themes
                                     helm-c-yasnippet
-                                    org-projectile
+                                    ;; org-projectile
                                     ;; org-download
-                                    org-timer
+                                    ;; org-timer
                                     ;; org-repo-todo
                                     ;; org-plus-contrib
-                                    org-brain
-                                    org-present
-                                    orgit
+                                    ;; org-brain
+                                    ;; org-present
+                                    ;; orgit
                                     magit-gh-pulls
                                     magit-gitflow
                                     magithub
@@ -126,8 +132,8 @@
                                     ;; auto-dictionary
                                     flyspell-correct-helm
                                     ivy-purpose
-                                    spacemacs-purpose-popwin
-                                    window-purpose
+                                    ;; spacemacs-purpose-popwin
+                                    ;; window-purpose
                                     info+
                                     help-fns+
                                     hide-comnt
@@ -220,7 +226,12 @@
   (setq powerline-default-separator 'utf-8)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EMR;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
+  ;; (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;cnfonts;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; (require 'cnfonts)
+  ;; (cnfonts-enable)
+  ;; (cnfonts-set-spacemacs-fallback-fonts)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;PyRope;;;;;;;;;;;;;;;;;;;;;;;;;;
   (setq pymacs-load-path '("/usr/local/build/rope"
@@ -298,12 +309,14 @@
       (kill-new rtn)
       rtn))
 
-  ;; orgmode hotkey, such as <s
-  (require 'org-tempo)
   ;; orgmode todolist
   (with-eval-after-load 'org
-    (setq org-bullets-bullet-list '("☯" "☰" "☱" "☲"))
+    ;; orgmode hotkey, such as <s
+    (require 'org-tempo)
+    ;; org bullets
+    (setq org-superstar-headline-bullets-list '("☯" "☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"))
     ;; (setq org-bullets-bullet-list '("☯" "☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"))
+    ;; (setq org-bullets-bullet-list '("☯" "☰" "☱" "☲"))
     ;; (setq org-bullets-bullet-list '("᭄" "ஐ" "൬" "က" "რ" "๓"))
     ;; (setq org-bullets-bullet-list '("ஐ" "൬" "က" "ಇ" "დ" "๓"))
     ;; (setq org-bullets-bullet-list '("﹏ૡ" "﹏ૡૡ" "﹏ૡૡૡ" "﹏ૡૡૡૡ" "﹏ૡૡૡૡૡ" "﹏ૡૡૡૡૡૡ"))
@@ -323,7 +336,6 @@
                                    ;; (clojure . t)
                                    (js . t)
                                    ;; (lua . t)
-                                   ;; (matlab . t)
                                    ;; (org . t)
                                    ;; (scheme . t)
                                    ;; (sql . t)
@@ -355,22 +367,25 @@
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Agenda;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; 加入日程表文件
-  (setq org-agenda-files (list '("~/Dropbox/org")))
-  (setq org-agenda-custom-commands
-        '(
-          ("w" . "Task")
-          ("wa" "Important&Hurry" tags-todo "+PRIORITY=\"A\"")
-          ("wb" "Important&NoHurry" tags-todo "-weekly-monthly-daily+PRIORITY=\"B\"")
-          ("wc" "NoImportant&Hurry" tags-todo "+PRIORITY=\"C\"")
-          ("W" "Weekly Review"
-           ((stuck "")
-            (tags-todo "work")
-            (tags-todo "learn")
-            (tags-todo "daily")
-            (tags-todo "weekly")
-            (tags-todo "code")
-            (tags-todo "thing"))))
-        )
+  (with-eval-after-load 'org-agenda
+    (require 'org-projectile)
+    (push (org-projectile:todo-files) org-agenda-files)
+    (setq org-agenda-files (list '("~/Dropbox/org")))
+    (setq org-agenda-custom-commands
+          '(
+            ("w" . "Task")
+            ("wa" "Important&Hurry" tags-todo "+PRIORITY=\"A\"")
+            ("wb" "Important&NoHurry" tags-todo "-weekly-monthly-daily+PRIORITY=\"B\"")
+            ("wc" "NoImportant&Hurry" tags-todo "+PRIORITY=\"C\"")
+            ("W" "Weekly Review"
+             ((stuck "")
+              (tags-todo "work")
+              (tags-todo "learn")
+              (tags-todo "daily")
+              (tags-todo "weekly")
+              (tags-todo "code")
+              (tags-todo "thing"))))
+          ))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Bazel;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (add-hook 'bazel-mode-hook (lambda() (add-hook 'before-save-hook #'bazel-format nil t)))
@@ -411,13 +426,13 @@
   (defun clang-format-bindings ()
     (define-key c++-mode-map [tab] 'clang-format-buffer))
   ;; 修复系统头文件导入
-  ;; (with-eval-after-load 'ccls
-  ;;   (when (eq system-type 'darwin)
-  ;;     (setq ccls-initialization-options
-  ;;           `(:clang ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
-  ;;                                       "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
-  ;;                                       "-isystem/usr/local/include"]
-  ;;                           :resourceDir (string-trim (shell-command-to-string "clang -print-resource-dir")))))))
+  (with-eval-after-load 'ccls
+    (when (eq system-type 'darwin)
+      (setq ccls-initialization-options
+            `(:clang ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
+                                        "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+                                        "-isystem/usr/local/include"]
+                            :resourceDir (string-trim (shell-command-to-string "clang -print-resource-dir")))))))
 
   (require 'sr-speedbar)
 
@@ -493,11 +508,14 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(ansi package-build shut-up epl git commander f dash s))
+ '(package-selected-packages
+   '(cnfonts ansi package-build shut-up epl git commander f dash s))
  '(safe-local-variable-values
    '((python-backend . lsp)
      (go-backend . go-mode)
      (go-backend . lsp)
+     (js2-mode
+      (javascript-backend . lsp))
      (rust-mode
       (rust-backend . lsp)))))
 (custom-set-faces
